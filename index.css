@@ -1,0 +1,101 @@
+/* 기본 리셋 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8fafc;
+  color: #333;
+}
+
+/* 헤더: 배달 글자만 깔끔하게 */
+.header {
+  background-color: #2EC4B6; /* 민트 색상 */
+  color: #ffffff;
+  padding: 18px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* 메인 박스 (라운딩 최소화, 그림자 제거) */
+.container {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 2px solid #2EC4B6;
+  border-radius: 4px; /* 최소한의 라운딩 */
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+/* 입력창 폼 영역 */
+.menu-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #2EC4B6;
+}
+
+.input-group input {
+  padding: 8px 10px;
+  border: 1px solid #cccccc;
+  border-radius: 2px;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: #2EC4B6;
+}
+
+/* 버튼 */
+.btn-submit {
+  padding: 10px;
+  background-color: #2EC4B6;
+  color: white;
+  border: none;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background-color: #25a195;
+}
+
+/* ⭐ 강아지 사진 영역 ⭐ */
+.photo-box {
+  width: 130px;
+  height: 130px;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
