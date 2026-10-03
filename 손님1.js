@@ -1,22 +1,26 @@
-// Firebase SDK 임포트
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🌟 [중요] 위와 동일한 본인의 Firebase 프로젝트 설정 값 입력
+// 🌟 데이터베이스 주소가 포함된 최종 설정값
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyA6Cp4wtBdLj5qccadneCWfCSe2qfg1FDU",
+    authDomain: "deliverywawa.firebaseapp.com",
+    databaseURL: "https://deliverywawa-default-rtdb.firebaseio.com",
+    projectId: "deliverywawa",
+    storageBucket: "deliverywawa.firebasestorage.app",
+    messagingSenderId: "137660899274",
+    appId: "1:137660899274:web:957d0dc6e86715c3a6f933",
+    measurementId: "G-1KRDR5LGD8"
 };
 
-// Firebase 초기화
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const menuRef = ref(db, 'menus');
+let menuRef;
+try {
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    menuRef = ref(db, 'menus');
+} catch (e) {
+    console.error("Firebase 초기화 오류:", e);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const categoryBtnGrid = document.getElementById('categoryBtnGrid');
@@ -28,30 +32,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderBtn = document.getElementById('orderBtn');
     const backBtn = document.getElementById('backBtn');
 
-    let menus = []; // 서버에서 실시간으로 받아올 메뉴 배열
+    let menus = [];
     let cart = []; 
     let selectedCategory = null; 
 
-    // 🔄 서버에서 실시간 메뉴 데이터 수신
-    onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            // 객체 형태로 들어온 데이터를 배열로 변환
-            menus = Object.keys(data).map(key => ({
-                id: key,
-                ...data[key]
-            }));
-        } else {
-            menus = [];
-        }
+    if (menuRef) {
+        onValue(menuRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                menus = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                }));
+            } else {
+                menus = [];
+            }
 
-        // 카테고리가 선택되어 있다면 화면 갱신
-        if (selectedCategory) {
-            renderMenus();
-        }
-    });
+            if (selectedCategory) {
+                renderMenus();
+            }
+        });
+    }
 
-    // 카테고리 버튼 클릭 이벤트
     categoryBtnGrid.addEventListener('click', (e) => {
         if (!e.target.classList.contains('cat-select-btn')) return;
 
@@ -64,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMenus();
     });
 
-    // 선택된 카테고리의 메뉴 렌더링
     function renderMenus() {
         menuGrid.innerHTML = '';
 
@@ -92,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 장바구니 담기
     menuGrid.addEventListener('click', (e) => {
         if (!e.target.classList.contains('add-cart-btn')) return;
         const name = e.target.dataset.name;
@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
     }
 
-    // 장바구니 조작
     cartList.addEventListener('click', (e) => {
         const index = e.target.dataset.index;
         if (index === undefined) return;
