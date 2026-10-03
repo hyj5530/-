@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuCount = document.getElementById('menuCount');
     const backBtn = document.getElementById('backBtn');
 
-    // 이 기기에서 내가 등록한 메뉴 키 목록 불러오기
     let myMenuKeys = JSON.parse(localStorage.getItem('myWawaMenuKeys')) || [];
     let allMenusData = {};
 
@@ -83,13 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
         menuNameInput.value = '';
         menuPriceInput.value = '';
         categorySelect.focus();
+
+        // 🌟 [핵심 수정] 등록 직후 서버 데이터가 오기 전이라도 화면에 바로 반영되도록 즉시 렌더링 호출
+        renderMyMenus(allMenusData);
     });
 
     // 주인 화면: 내가 등록한 메뉴만 필터링해서 보여주기
     function renderMyMenus(data) {
         menuList.innerHTML = '';
         
-        const validKeys = myMenuKeys.filter(key => data[key]);
+        const validKeys = myMenuKeys.filter(key => data && data[key]);
 
         if (validKeys.length === 0) {
             menuList.innerHTML = '<li class="empty-item">아직 등록한 메뉴가 없습니다.</li>';
@@ -99,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         validKeys.forEach((key) => {
             const menu = data[key];
+            if (!menu) return; // 혹시 데이터가 없으면 패스
             const li = document.createElement('li');
             li.innerHTML = `
                 <span><b>[${menu.category}]</b> ${menu.name}</span>
