@@ -1,40 +1,87 @@
-/* 🐾 배달 치와와 마스코트 배너 스타일 */
+/* 기본 초기화 및 민트/퍼플 테마 디자인 */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', sans-serif; }
+body { background-color: #f4f7f6; color: #333; padding: 20px; }
+.customer-container { max-width: 1200px; margin: 0 auto; background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 30px; }
+
+/* 헤더 영역 */
+.customer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+.badge { background: #845ec2; color: #fff; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+.header-title-box h1 { font-size: 26px; color: #222; margin-bottom: 5px; }
+.header-title-box p { font-size: 14px; color: #666; }
+.back-btn { background: #f1f2f6; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.back-btn:hover { background: #dfe4ea; }
+
+/* 메인 콘텐츠 좌우 분할 */
+.customer-content { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; align-items: start; }
+@media (max-width: 768px) { .customer-content { grid-template-columns: 1fr; } }
+
+/* 카테고리 영역 */
+.category-selection-box { background: #f9f9fb; padding: 20px; border-radius: 15px; margin-bottom: 25px; }
+.category-selection-box h2 { font-size: 18px; margin-bottom: 15px; color: #444; }
+.category-btn-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.cat-select-btn { background: #fff; border: 2px solid #ddd; padding: 10px 18px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.cat-select-btn:hover, .cat-select-btn.active { background: #00c9a7; border-color: #00c9a7; color: #fff; }
+
+/* 메뉴판 영역 */
+.menu-display-box { background: #fff; border: 2px solid #f0f0f0; border-radius: 15px; padding: 20px; min-height: 300px; }
+.menu-display-box h2 { font-size: 18px; margin-bottom: 15px; color: #444; }
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+.no-menu { grid-column: 1 / -1; text-align: center; color: #888; padding: 40px; font-size: 15px; }
+
+.menu-card { background: #faf8ff; border: 2px solid #845ec233; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+.card-name { font-weight: bold; font-size: 16px; color: #333; }
+.card-price { font-weight: bold; color: #845ec2; font-size: 15px; }
+.add-cart-btn { background: #00c9a7; color: #fff; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.add-cart-btn:hover { background: #00b393; }
+
+/* 장바구니 영역 */
+.cart-section { background: #fafbfc; border: 2px solid #eef2f3; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; }
+.cart-header-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.cart-header-title h2 { font-size: 18px; color: #444; }
+.cart-icon-box { position: relative; font-size: 20px; color: #845ec2; }
+.cart-badge { position: absolute; top: -8px; right: -10px; background: #ff6b6b; color: #fff; font-size: 11px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+.cart-list { list-style: none; max-height: 200px; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.empty-cart { text-align: center; color: #888; padding: 20px 0; font-size: 14px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee; }
+.cart-item-info { display: flex; flex-direction: column; gap: 2px; }
+.cart-item-name { font-weight: bold; font-size: 14px; }
+.cart-item-price { font-size: 12px; color: #666; }
+.cart-item-controls { display: flex; gap: 5px; }
+.cart-item-controls button { background: #eee; border: none; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.cart-item-controls .delete-item-btn { background: #ff6b6b; color: #fff; }
+
+.cart-total-box { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
+.total-price { color: #845ec2; font-size: 18px; }
+
+.order-btn { background: #845ec2; color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 15px; width: 100%; }
+.order-btn:hover { background: #734dbf; }
+
+/* 🐾 배달 치와와 마스코트 배너 (크기 및 레이아웃 완벽 고정) */
 .chiwawa-banner {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     background: #fdfbf7;
     border: 2px dashed #845ec2;
-    border-radius: 14px;
-    padding: 12px 16px;
+    border-radius: 12px;
+    padding: 12px;
+    width: 100%;
     margin-top: 15px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.03);
 }
-
 .chiwawa-img {
-    width: 60px !important;
-    height: 60px !important;
-    min-width: 60px !important;
-    min-height: 60px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     border: 2px solid #00c9a7 !important;
     display: block !important;
 }
-
-.chiwawa-text-box {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.chiwawa-title {
-    font-size: 15px;
-    font-weight: bold;
-    color: #845ec2;
-}
-
-.chiwawa-desc {
-    font-size: 13px;
-    color: #444444;
-}
+.chiwawa-text-box { display: flex; flex-direction: column; gap: 3px; }
+.chiwawa-title { font-size: 13px; font-weight: bold; color: #845ec2; }
+.chiwawa-desc { font-size: 11px; color: #555555; }
