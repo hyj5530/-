@@ -1,23 +1,26 @@
-// Firebase SDK 임포트
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🌟 [중요] 본인의 Firebase 프로젝트 설정 값으로 아래 내용을 채워넣어 주세요!
-// (Firebase 콘솔 -> 프로젝트 설정 -> 웹 앱 추가 후 나오는 firebaseConfig 객체 복사해서 붙여넣기)
+// 🌟 데이터베이스 주소가 포함된 최종 설정값
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyA6Cp4wtBdLj5qccadneCWfCSe2qfg1FDU",
+    authDomain: "deliverywawa.firebaseapp.com",
+    databaseURL: "https://deliverywawa-default-rtdb.firebaseio.com",
+    projectId: "deliverywawa",
+    storageBucket: "deliverywawa.firebasestorage.app",
+    messagingSenderId: "137660899274",
+    appId: "1:137660899274:web:957d0dc6e86715c3a6f933",
+    measurementId: "G-1KRDR5LGD8"
 };
 
-// Firebase 초기화
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const menuRef = ref(db, 'menus'); // 데이터베이스 내 'menus' 경로
+let db, menuRef;
+try {
+    const app = initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    menuRef = ref(db, 'menus');
+} catch (e) {
+    console.error("Firebase 초기화 오류:", e);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
@@ -28,16 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuCount = document.getElementById('menuCount');
     const backBtn = document.getElementById('backBtn');
 
-    let menusData = {};
+    if (menuRef) {
+        onValue(menuRef, (snapshot) => {
+            const data = snapshot.val();
+            renderMenus(data || {});
+        }, (error) => {
+            console.error("데이터 읽기 실패:", error);
+        });
+    } else {
+        menuList.innerHTML = '<li class="empty-item" style="color:red;">Firebase 연동 오류 발생</li>';
+    }
 
-    // 🔄 Firebase 실시간 데이터 동기화 (누가 등록하든 실시간 반영)
-    onValue(menuRef, (snapshot) => {
-        const data = snapshot.val();
-        menusData = data || {};
-        renderMenus(menusData);
-    });
-
-    // 메뉴 등록 버튼 클릭
     submitBtn.addEventListener('click', () => {
         const category = categorySelect.value;
         const name = menuNameInput.value.trim();
@@ -61,23 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const price = Number(priceRaw).toLocaleString();
 
-        // Firebase에 새 메뉴 푸시 (데이터 자동 저장)
-        push(menuRef, {
-            category,
-            name,
-            price
-        }).then(() => {
-            // 입력창 초기화
+        push(menuRef, { category, name, price }).then(() => {
             categorySelect.selectedIndex = 0;
             menuNameInput.value = '';
             menuPriceInput.value = '';
             categorySelect.focus();
         }).catch((error) => {
-            console.error("메뉴 등록 실패: ", error);
+            alert('등록 실패: ' + error.message);
         });
     });
 
-    // 화면에 메뉴 목록 그리기
     function renderMenus(data) {
         menuList.innerHTML = '';
         const keys = Object.keys(data);
@@ -104,14 +101,14 @@ document.addEventListener('DOMContentLoaded', () => {
         menuCount.textContent = `${keys.length}개`;
     }
 
-    // 메뉴 삭제 기능
     menuList.addEventListener('click', (e) => {
         if (!e.target.classList.contains('delete-menu-btn')) return;
         const key = e.target.dataset.key;
-        remove(ref(db, `menus/${key}`));
+        if (menuRef) {
+            remove(ref(db, `menus/${key}`));
+        }
     });
 
-    // 처음으로 버튼
     backBtn.addEventListener('click', () => {
         location.href = 'index.html'; 
     });
