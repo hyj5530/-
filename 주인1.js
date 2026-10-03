@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuCount = document.getElementById('menuCount');
     const backBtn = document.getElementById('backBtn');
 
-    // 🔑 이 기기(브라우저)에서 내가 등록한 메뉴들의 고유 ID를 저장할 배열 불러오기
+    // 이 기기에서 내가 등록한 메뉴 키 목록 불러오기
     let myMenuKeys = JSON.parse(localStorage.getItem('myWawaMenuKeys')) || [];
     let allMenusData = {};
 
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         menuList.innerHTML = '<li class="empty-item" style="color:red;">Firebase 연동 오류 발생</li>';
     }
 
-    // 메뉴 등록 버튼 클릭
+    // 메뉴 등록 버튼 클릭 이벤트
     submitBtn.addEventListener('click', () => {
         const category = categorySelect.value;
         const name = menuNameInput.value.trim();
@@ -71,10 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const price = Number(priceRaw).toLocaleString();
 
-        // 파이어베이스에 메뉴 밀어넣기
+        // 파이어베이스에 메뉴 등록
         const newMenuRef = push(menuRef, { category, name, price });
         
-        // 방금 내가 등록한 메뉴의 고유 ID를 내 브라우저(localStorage)에 저장
+        // 내 기기 저장소에 키 저장
         myMenuKeys.push(newMenuRef.key);
         localStorage.setItem('myWawaMenuKeys', JSON.stringify(myMenuKeys));
 
@@ -85,11 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
         categorySelect.focus();
     });
 
-    // 📋 주인 화면에는 "내가 등록한 메뉴"만 필터링해서 보여주기
+    // 주인 화면: 내가 등록한 메뉴만 필터링해서 보여주기
     function renderMyMenus(data) {
         menuList.innerHTML = '';
         
-        // 내 기기에서 등록한 키들만 골라냄
         const validKeys = myMenuKeys.filter(key => data[key]);
 
         if (validKeys.length === 0) {
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const menu = data[key];
             const li = document.createElement('li');
             li.innerHTML = `
-                <span><b>[${menu.category}]</b>${menu.name}</span>
+                <span><b>[${menu.category}]</b> ${menu.name}</span>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="color: #845ec2; font-weight: bold;">${menu.price}원</span>
                     <button class="delete-menu-btn" data-key="${key}" style="background:#ff6b6b; color:white; border:none; padding:3px 8px; border-radius:6px; cursor:pointer;">삭제</button>
@@ -114,16 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
         menuCount.textContent = `${validKeys.length}개`;
     }
 
-    // 메뉴 삭제 (내 목록 및 파이어베이스에서 제거)
+    // 메뉴 삭제 버튼
     menuList.addEventListener('click', (e) => {
         if (!e.target.classList.contains('delete-menu-btn')) return;
         const key = e.target.dataset.key;
         
         if (menuRef) {
-            // 파이어베이스에서 삭제 (손님 화면에서도 사라짐)
-            remove(ref(db, `menus/${key }));
+            remove(ref(db, `menus/${key}`));
 
-            // 내 로컬 저장소 목록에서도 제거
             myMenuKeys = myMenuKeys.filter(k => k !== key);
             localStorage.setItem('myWawaMenuKeys', JSON.stringify(myMenuKeys));
             
@@ -131,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 처음으로 버튼
     backBtn.addEventListener('click', () => {
         location.href = 'index.html'; 
     });
