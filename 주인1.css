@@ -253,13 +253,13 @@ body {
     font-weight: bold;
     color: #00897b;
 }
-/* 🐾 귀여운 배달 마스코트 배너 스타일 */
+/* 🐾 귀여운 배달 마스코트 배너 스타일 (크기 고정 완료!) */
 .delivery-puppy-banner {
     display: flex;
     align-items: center;
     gap: 12px;
     background: #fdfbf7;
-    border: 2px dashed #845ec2; /* 민트/퍼플 컨셉에 맞춘 깔끔한 퍼플 테두리 */
+    border: 2px dashed #845ec2;
     border-radius: 12px;
     padding: 10px 14px;
     margin-top: 15px;
@@ -267,11 +267,16 @@ body {
 }
 
 .banner-puppy-img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #00c9a7; /* 포인트 민트 색상 테두리 */
+    width: 45px !important;
+    height: 45px !important;
+    min-width: 45px !important;
+    min-height: 45px !important;
+    max-width: 45px !important;
+    max-height: 45px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #00c9a7 !important;
+    display: block !important;
 }
 
 .banner-text-box {
