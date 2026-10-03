@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>배달와와 - 손님 주문 화면</title>
-    <link rel="stylesheet" href="손님1.css">
+    <link rel="stylesheet" href="customer_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -23,7 +23,7 @@
         <div class="customer-content">
             <!-- 왼쪽: 카테고리 선택 및 메뉴 리스트 영역 -->
             <div class="left-section">
-                <!-- 카테고리 버튼들 (처음엔 카테고리 선택 유도) -->
+                <!-- 카테고리 버튼들 -->
                 <div class="category-selection-box">
                     <h2>📁 카테고리 선택</h2>
                     <div class="category-btn-grid" id="categoryBtnGrid">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <!-- 선택된 카테고리의 메뉴판 (카테고리 누르기 전엔 안내 문구 표시) -->
+                <!-- 선택된 카테고리의 메뉴판 -->
                 <div class="menu-display-box" id="menuDisplayBox">
                     <h2 id="currentCategoryTitle">🍽️ 메뉴판</h2>
                     <div class="menu-grid" id="menuGrid">
@@ -67,18 +67,20 @@
                 </div>
 
                 <button class="order-btn" id="orderBtn">주문하기</button>
-            </div>
-            <!-- 🐾 [추가] 작고 귀여운 배달 마스코트 카드 -->
-            <div class="delivery-puppy-banner">
-                <img src="wawa.jpg" alt="귀여운 배달 강아지" class="banner-puppy-img">
-                <div class="banner-text-box">
-                    <span class="banner-title">배달 치와와! 🛵</span>
-                    <span class="banner-desc">빨리 배달해 드립니다! 🐾</span>
+
+                <!-- 🐾 작고 귀여운 배달 치와와 배너 (크기 완벽 고정) -->
+                <div style="display: flex; align-items: center; gap: 12px; background: #fdfbf7; border: 2px dashed #845ec2; border-radius: 12px; padding: 10px 14px; margin-top: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                    <img src="wawa.jpg" alt="귀여운 배달 치와와" style="width: 45px !important; height: 45px !important; min-width: 45px !important; min-height: 45px !important; max-width: 45px !important; max-height: 45px !important; border-radius: 50% !important; object-fit: cover !important; border: 2px solid #00c9a7 !important; display: block !important;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 13px; font-weight: bold; color: #845ec2;">배달 치와와 🛵</span>
+                        <span style="font-size: 12px; color: #555555;">빨리 배달해 드립니다! 🐾</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="손님1.js"></script>
+    <!-- type="module" 필수 -->
+    <script type="module" src="customer_script.js"></script>
 </body>
 </html>
