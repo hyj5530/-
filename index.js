@@ -11,5 +11,5 @@ ownerBtn.addEventListener('click', function() {
 // 손님 버튼 클릭 이벤트
 customerBtn.addEventListener('click', function() {
     alert('손님 화면으로 이동합니다!');
-    // TODO: 추후 손님 페이지로 이동하는 코드 작성 (예: location.href = 'customer.html';)
+    (location.href = '손님1.html');
 });
