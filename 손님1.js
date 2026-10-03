@@ -1,5 +1,24 @@
+// Firebase SDK 임포트
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+// 🌟 [중요] 위와 동일한 본인의 Firebase 프로젝트 설정 값 입력
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Firebase 초기화
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const menuRef = ref(db, 'menus');
+
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM 요소 가져오기
     const categoryBtnGrid = document.getElementById('categoryBtnGrid');
     const menuGrid = document.getElementById('menuGrid');
     const currentCategoryTitle = document.getElementById('currentCategoryTitle');
@@ -9,16 +28,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderBtn = document.getElementById('orderBtn');
     const backBtn = document.getElementById('backBtn');
 
-    // LocalStorage에서 가게 주인이 등록한 메뉴 불러오기
-    let menus = JSON.parse(localStorage.getItem('wawaMenus')) || [];
-    let cart = []; // 장바구니 배열
-    let selectedCategory = null; // 현재 선택된 카테고리
+    let menus = []; // 서버에서 실시간으로 받아올 메뉴 배열
+    let cart = []; 
+    let selectedCategory = null; 
+
+    // 🔄 서버에서 실시간 메뉴 데이터 수신
+    onValue(menuRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // 객체 형태로 들어온 데이터를 배열로 변환
+            menus = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            }));
+        } else {
+            menus = [];
+        }
+
+        // 카테고리가 선택되어 있다면 화면 갱신
+        if (selectedCategory) {
+            renderMenus();
+        }
+    });
 
     // 카테고리 버튼 클릭 이벤트
     categoryBtnGrid.addEventListener('click', (e) => {
         if (!e.target.classList.contains('cat-select-btn')) return;
 
-        // 활성 버튼 스타일 전환
         document.querySelectorAll('.cat-select-btn').forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
 
@@ -28,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMenus();
     });
 
-    // 선택된 카테고리에 해당하는 메뉴만 화면에 렌더링
+    // 선택된 카테고리의 메뉴 렌더링
     function renderMenus() {
         menuGrid.innerHTML = '';
 
@@ -56,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 메뉴 카드 안의 '담기' 버튼 클릭 이벤트 위임
+    // 장바구니 담기
     menuGrid.addEventListener('click', (e) => {
         if (!e.target.classList.contains('add-cart-btn')) return;
         const name = e.target.dataset.name;
@@ -64,21 +100,18 @@ document.addEventListener('DOMContentLoaded', () => {
         addToCart(name, priceStr);
     });
 
-    // 장바구니에 메뉴 추가
     function addToCart(name, priceStr) {
         const price = Number(priceStr.replace(/,/g, ''));
-
         const existingItem = cart.find(item => item.name === name);
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
             cart.push({ name, price, quantity: 1 });
         }
-
         renderCart();
     }
 
-    // 장바구니 수량 변경 및 삭제 이벤트 위임
+    // 장바구니 조작
     cartList.addEventListener('click', (e) => {
         const index = e.target.dataset.index;
         if (index === undefined) return;
@@ -96,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
     });
 
-    // 장바구니 현황 렌더링 및 총금액 계산
     function renderCart() {
         cartList.innerHTML = '';
 
@@ -135,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cartBadge.textContent = totalCount;
     }
 
-    // 주문하기 버튼
     orderBtn.addEventListener('click', () => {
         if (cart.length === 0) {
             alert('장바구니에 담긴 메뉴가 없습니다!');
@@ -146,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
     });
 
-    // 처음으로 버튼
     backBtn.addEventListener('click', () => {
         location.href = 'index.html';
     });
