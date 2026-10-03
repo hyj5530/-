@@ -1,0 +1,106 @@
+/* 기본 스타일 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    /* 전체 배경: 은은한 연한 민트톤 */
+    background-color: #f0f7f4; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 메인 컨테이너 */
+.welcome-container {
+    text-align: center;
+    background: #ffffff;
+    padding: 45px 35px;
+    border-radius: 28px;
+    /* 부드러운 민트 계열 그림자 */
+    box-shadow: 0 12px 30px rgba(53, 162, 139, 0.12);
+    width: 90%;
+    max-width: 420px;
+    border: 1px solid #e1f0eb;
+}
+
+/* 강아지 이미지 스타일 */
+.image-wrapper {
+    margin-bottom: 22px;
+}
+
+.puppy-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    /* 포인트 컬러인 보라색 테두리 */
+    border: 4px solid #845ec2;
+    box-shadow: 0 6px 15px rgba(132, 94, 194, 0.2);
+}
+
+/* 제목 스타일 (메인: 민트/청록 계열) */
+.main-title {
+    font-size: 2.6rem;
+    color: #00897b;
+    margin-bottom: 8px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* 서브 환영 멘트 스타일 */
+.sub-title {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 35px;
+    font-weight: 500;
+}
+
+/* 버튼 그룹 영역 */
+.button-group {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+}
+
+/* 공통 버튼 스타일 */
+.role-btn {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+}
+
+/* 가게 주인 버튼 (메인 민트 컬러) */
+.owner-btn {
+    background-color: #26a69a;
+    color: white;
+    box-shadow: 0 4px 12px rgba(38, 166, 154, 0.3);
+}
+
+.owner-btn:hover {
+    background-color: #00897b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(38, 166, 154, 0.4);
+}
+
+/* 손님 버튼 (포인트 보라색 컬러) */
+.customer-btn {
+    background-color: #845ec2;
+    color: white;
+    box-shadow: 0 4px 12px rgba(132, 94, 194, 0.3);
+}
+
+.customer-btn:hover {
+    background-color: #6b4c9a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(132, 94, 194, 0.4);
+}
