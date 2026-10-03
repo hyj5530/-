@@ -83,5 +83,11 @@
     </div>
 
     <script src="주인1.js"></script>
+    <!-- 기존 head 또는 body 태그 내부에 아래 Firebase SDK 스크립트 추가 -->
+<script type="module">
+    // Firebase 설정 및 초기화 (이후 owner_script.js에서 사용)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+</script>
 </body>
 </html>
