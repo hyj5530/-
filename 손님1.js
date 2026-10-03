@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🌟 데이터베이스 주소가 포함된 최종 설정값
 const firebaseConfig = {
     apiKey: "AIzaSyA6Cp4wtBdLj5qccadneCWfCSe2qfg1FDU",
     authDomain: "deliverywawa.firebaseapp.com",
@@ -180,3 +179,5 @@ document.addEventListener('DOMContentLoaded', () => {
         location.href = 'index.html';
     });
 });
+
+
