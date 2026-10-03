@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배달와와 - 손님 주문 화면</title>
+    <link rel="stylesheet" href="손님1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="customer-container">
+        <!-- 상단 헤더 -->
+        <header class="customer-header">
+            <div class="header-title-box">
+                <span class="badge">CUSTOMER</span>
+                <h1>배달와와 주문하기</h1>
+                <p>원하시는 카테고리를 선택해 메뉴를 골라보세요!</p>
+            </div>
+            <button class="back-btn" id="backBtn">처음으로</button>
+        </header>
+
+        <!-- 메인 콘텐츠 (좌우 분할) -->
+        <div class="customer-content">
+            <!-- 왼쪽: 카테고리 선택 및 메뉴 리스트 영역 -->
+            <div class="left-section">
+                <!-- 카테고리 버튼들 (처음엔 카테고리 선택 유도) -->
+                <div class="category-selection-box">
+                    <h2>📁 카테고리 선택</h2>
+                    <div class="category-btn-grid" id="categoryBtnGrid">
+                        <button class="cat-select-btn" data-category="한식">한식</button>
+                        <button class="cat-select-btn" data-category="중식">중식</button>
+                        <button class="cat-select-btn" data-category="양식">양식</button>
+                        <button class="cat-select-btn" data-category="일식">일식</button>
+                        <button class="cat-select-btn" data-category="패스트푸드">패스트푸드</button>
+                        <button class="cat-select-btn" data-category="분식">분식</button>
+                        <button class="cat-select-btn" data-category="디저트">디저트</button>
+                    </div>
+                </div>
+
+                <!-- 선택된 카테고리의 메뉴판 (카테고리 누르기 전엔 안내 문구 표시) -->
+                <div class="menu-display-box" id="menuDisplayBox">
+                    <h2 id="currentCategoryTitle">🍽️ 메뉴판</h2>
+                    <div class="menu-grid" id="menuGrid">
+                        <div class="no-menu">위에서 카테고리를 선택해 주세요! 🐾</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 장바구니 현황 영역 -->
+            <div class="cart-section">
+                <div class="cart-header-title">
+                    <h2>🛍️ 장바구니 현황</h2>
+                    <div class="cart-icon-box">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </div>
+                </div>
+
+                <ul class="cart-list" id="cartList">
+                    <li class="empty-cart">장바구니가 비어 있습니다.</li>
+                </ul>
+
+                <!-- 총 계산 금액 -->
+                <div class="cart-total-box">
+                    <span>총 결제 금액</span>
+                    <span class="total-price" id="totalPrice">0원</span>
+                </div>
+
+                <button class="order-btn" id="orderBtn">주문하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="customer_script.js"></script>
+</body>
+</html>
