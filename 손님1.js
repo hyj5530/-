@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA6Cp4wtBdLj5qccadneCWfCSe2qfg1FDU",
@@ -12,10 +12,10 @@ const firebaseConfig = {
     measurementId: "G-1KRDR5LGD8"
 };
 
-let menuRef;
+let db, menuRef;
 try {
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    db = getDatabase(app);
     menuRef = ref(db, 'menus');
 } catch (e) {
     console.error("Firebase 초기화 오류:", e);
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function addToCart(name, priceStr) {
-        const price = Number(priceStr.replace(/,/g, ''));
+        const price = Number(String(priceStr).replace(/,/g, ''));
         const existingItem = cart.find(item => item.name === name);
         if (existingItem) {
             existingItem.quantity += 1;
@@ -165,19 +165,40 @@ document.addEventListener('DOMContentLoaded', () => {
         cartBadge.textContent = totalCount;
     }
 
+    // 🌟 주문하기 클릭 시 Firebase 'orders' 노드로 전송
     orderBtn.addEventListener('click', () => {
         if (cart.length === 0) {
             alert('장바구니에 담긴 메뉴가 없습니다!');
             return;
         }
-        alert('성공적으로 주문이 완료되었습니다! 🐾 맛있게 준비해 드릴게요.');
-        cart = [];
-        renderCart();
+
+        if (db) {
+            const ordersRef = ref(db, 'orders');
+            const orderData = {
+                items: cart,
+                totalPrice: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                status: '접수대기',
+                createdAt: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            push(ordersRef, orderData)
+                .then(() => {
+                    alert('성공적으로 주문이 완료되었습니다! 🐾 맛있게 준비해 드릴게요.');
+                    cart = [];
+                    renderCart();
+                })
+                .catch((error) => {
+                    console.error("주문 실패:", error);
+                    alert("주문 전송 중 오류가 발생했습니다.");
+                });
+        } else {
+            alert('성공적으로 주문이 완료되었습니다! 🐾 맛있게 준비해 드릴게요.');
+            cart = [];
+            renderCart();
+        }
     });
 
     backBtn.addEventListener('click', () => {
         location.href = 'index.html';
     });
 });
-
-
