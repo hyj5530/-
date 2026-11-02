@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 내 컴퓨터에서 등록한 메뉴 Key 목록 로드
     let myMenuKeys = JSON.parse(localStorage.getItem('myWawaMenuKeys')) || [];
-    let pendingRemoveOrderId = null; // 삭제 대기 중인 주문 ID
+    let pendingRemoveOrderId = null; // 팝업 확인 후 삭제할 주문 ID
 
     // 1. 등록된 메뉴 목록 실시간 로드
     if (menuRef) {
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 주문 내역 렌더링 함수
+    // 🛵 3단계 (접수대기 -> 조리중 -> 조리완료) 주문 내역 렌더링
     function renderOrders(data) {
         orderList.innerHTML = '';
 
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         orderKeys.forEach((orderId) => {
             const order = data[orderId];
-            const isCooked = order.status === '조리완료';
+            const status = order.status || '접수대기';
 
             const card = document.createElement('div');
             card.className = 'order-item-card';
@@ -104,16 +104,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 `<li>- ${item.name} x ${item.quantity}개 (${(item.price * item.quantity).toLocaleString()}원)</li>`
             ).join('');
 
-            // 조리 버튼 텍스트 및 클래스
-            const cookBtnText = isCooked ? '✓ 조리 완료' : '조리 시작';
-            const cookBtnClass = isCooked ? 'action-btn cook-btn completed' : 'action-btn cook-btn';
-            
-            // 상태 태그
+            // 🌟 3단계 상태별 태그, 버튼 문구, 배달버튼 활성화 여부 설정
             let statusTagHtml = `<span class="order-status-tag">접수대기</span>`;
-            if (isCooked) statusTagHtml = `<span class="order-status-tag done">조리완료</span>`;
+            let cookBtnText = '조리 시작';
+            let cookBtnClass = 'action-btn cook-btn';
+            let isDeliveryDisabled = true; // 조리완료 전까지는 기본 비활성화
 
-            // 🌟 조리가 완료되기 전(!isCooked)에는 배달기사 요청 버튼 비활성화 (disabled)
-            const isDeliveryDisabled = !isCooked;
+            if (status === '조리중') {
+                statusTagHtml = `<span class="order-status-tag cooking">조리중</span>`;
+                cookBtnText = '조리 완료';
+                cookBtnClass = 'action-btn cook-btn in-progress';
+                isDeliveryDisabled = true; // 조리중일 때도 여전히 비활성화!
+            } else if (status === '조리완료') {
+                statusTagHtml = `<span class="order-status-tag done">조리완료</span>`;
+                cookBtnText = '✓ 조리 완료';
+                cookBtnClass = 'action-btn cook-btn completed';
+                isDeliveryDisabled = false; // 🌟 조리완료 시에만 배달기사 요청 버튼 활성화!
+            }
 
             card.innerHTML = `
                 <div class="order-card-header">
@@ -127,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     총 결제금액: ${order.totalPrice ? order.totalPrice.toLocaleString() : 0}원
                 </div>
                 <div class="order-action-btns">
-                    <button class="${cookBtnClass}" data-id="${orderId}">
+                    <button class="${cookBtnClass}" data-id="${orderId}" data-status="${status}">
                         ${cookBtnText}
                     </button>
                     <button class="action-btn delivery-btn" data-id="${orderId}" ${isDeliveryDisabled ? 'disabled' : ''}>
@@ -146,22 +153,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const orderId = target.dataset.id;
         if (!orderId) return;
 
-        // [조리시작] <-> [✓ 조리 완료] 토글
+        // 🌟 [접수대기 ➔ 조리중 ➔ 조리완료] 순서 제어
         if (target.classList.contains('cook-btn')) {
-            const isCurrentlyCompleted = target.classList.contains('completed');
-            const newStatus = isCurrentlyCompleted ? '접수대기' : '조리완료';
+            const currentStatus = target.dataset.status || '접수대기';
+            let nextStatus = '접수대기';
 
-            update(ref(db, `orders/${orderId}`), { status: newStatus });
+            if (currentStatus === '접수대기') {
+                nextStatus = '조리중';
+            } else if (currentStatus === '조리중') {
+                nextStatus = '조리완료';
+            } else if (currentStatus === '조리완료') {
+                nextStatus = '조리완료'; // 이미 완료된 상태 유지
+            }
+
+            update(ref(db, `orders/${orderId}`), { status: nextStatus });
         }
 
-        // [배달기사 요청] 클릭 시 (활성화 상태일 때만 동작)
+        // [배달기사 요청] 클릭 시 (활성화된 상태일 때만)
         if (target.classList.contains('delivery-btn') && !target.disabled) {
-            pendingRemoveOrderId = orderId; // 삭제할 주문 ID 기록
-            modalOverlay.classList.add('active'); // 팝업 띄우기
+            pendingRemoveOrderId = orderId;
+            modalOverlay.classList.add('active'); // 팝업 모달 표시
         }
     });
 
-    // 🌟 팝업 모달 [확인] 누르면 주문 삭제 및 팝업 닫기
+    // 팝업 모달 [확인] 클릭 시 해당 주문 삭제
     modalCloseBtn.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
         if (pendingRemoveOrderId && db) {
