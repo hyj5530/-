@@ -15,7 +15,10 @@
                 <h1>가게 메뉴 관리</h1>
                 <p>카테고리를 선택하고 판매하실 메뉴 이름과 가격을 입력해 주세요.</p>
             </div>
-            <button class="back-btn" id="backBtn">처음으로</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="back-btn" id="orderManageBtn" style="background-color: #845ec2; color: white; border: none;">주문접수 관리 🛵</button>
+                <button class="back-btn" id="backBtn">처음으로</button>
+            </div>
         </header>
 
         <!-- 메인 콘텐츠 (좌우 분할) -->
@@ -48,7 +51,6 @@
                         <input type="number" id="menuPrice" placeholder="예: 12000" required>
                     </div>
 
-                    <!-- 기존 <button type="submit" class="submit-btn">메뉴 등록하기</button> 를 아래로 변경 -->
                     <button type="button" class="submit-btn" id="submitBtn">메뉴 등록하기</button>
                 </form>
 
@@ -56,7 +58,6 @@
                 <div class="menu-list-preview">
                     <h3>등록된 메뉴 목록</h3>
                     <ul id="menuList">
-                        <!-- 자바스크립트로 추가됨 -->
                         <li class="empty-item">아직 등록된 메뉴가 없습니다.</li>
                     </ul>
                 </div>
@@ -81,11 +82,8 @@
             </div>
         </div>
     </div>
-<!-- 반드시 type="module"이 있어야 합니다! -->
-<script type="module" src="주인1.js">
-    // Firebase 설정 및 초기화 (이후 owner_script.js에서 사용)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-</script>
+
+    <!-- 파이어베이스 모듈 스크립트 연결 -->
+    <script type="module" src="주인1.js"></script>
 </body>
 </html>
