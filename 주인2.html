@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배달와와 - 실시간 주문접수 관리</title>
+    <link rel="stylesheet" href="주인2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="owner-container">
+        <!-- 상단 헤더 -->
+        <header class="owner-header">
+            <div class="header-title-box">
+                <span class="badge">ORDER MANAGEMENT</span>
+                <h1>주문접수 관리</h1>
+                <p>실시간으로 들어오는 손님의 주문을 확인하고 관리해 보세요.</p>
+            </div>
+            <div class="header-btn-group">
+                <button class="back-btn nav-btn" id="menuManageBtn">메뉴 관리로</button>
+                <button class="back-btn" id="backBtn">처음으로</button>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 (좌우 분할 레이아웃) -->
+        <div class="owner-content">
+            <!-- 왼쪽: 등록된 가게 전체 메뉴 목록 -->
+            <div class="left-section">
+                <div class="section-card">
+                    <h2>🍽️ 등록된 메뉴 목록</h2>
+                    <p class="section-desc">현재 가게에 등록되어 판매 중인 메뉴 목록입니다.</p>
+                    <ul id="registeredMenuList" class="registered-menu-list">
+                        <li class="empty-item">메뉴 불러오는 중...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 실시간 접수된 주문 내역 -->
+            <div class="right-section">
+                <div class="section-card order-card-wrapper">
+                    <div class="order-header-box">
+                        <h2>🛵 신규 주문 내역</h2>
+                        <span class="order-count-badge" id="orderCountBadge">신규 0건</span>
+                    </div>
+                    
+                    <div id="orderList" class="order-list">
+                        <div class="empty-order">현재 들어온 주문이 없습니다. 🐾</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 팝업 모달: 배달기사 요청 완료 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <div class="modal-icon">🛵</div>
+            <h3>배달기사 요청 완료!</h3>
+            <p>픽업 기사님에게 배달 요청이 정상적으로 전송되었습니다.<br>잠시 후 기사님이 매장으로 방문할 예정입니다.</p>
+            <button class="modal-close-btn" id="modalCloseBtn">확인</button>
+        </div>
+    </div>
+
+    <script type="module" src="주인2.js"></script>
+</body>
+</html>
