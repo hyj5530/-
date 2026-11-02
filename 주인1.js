@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🌟 데이터베이스 주소가 포함된 최종 설정값
 const firebaseConfig = {
     apiKey: "AIzaSyA6Cp4wtBdLj5qccadneCWfCSe2qfg1FDU",
     authDomain: "deliverywawa.firebaseapp.com",
@@ -30,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuList = document.getElementById('menuList');
     const menuCount = document.getElementById('menuCount');
     const backBtn = document.getElementById('backBtn');
+    const orderManageBtn = document.getElementById('orderManageBtn'); // 🌟 주문접수 관리 버튼 추가
 
     let myMenuKeys = JSON.parse(localStorage.getItem('myWawaMenuKeys')) || [];
     let allMenusData = {};
@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         menuPriceInput.value = '';
         categorySelect.focus();
 
-        // 🌟 [핵심 수정] 등록 직후 서버 데이터가 오기 전이라도 화면에 바로 반영되도록 즉시 렌더링 호출
         renderMyMenus(allMenusData);
     });
 
@@ -101,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         validKeys.forEach((key) => {
             const menu = data[key];
-            if (!menu) return; // 혹시 데이터가 없으면 패스
+            if (!menu) return;
             const li = document.createElement('li');
             li.innerHTML = `
                 <span><b>[${menu.category}]</b> ${menu.name}</span>
@@ -130,6 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
             renderMyMenus(allMenusData);
         }
     });
+
+    // 🌟 주문접수 관리 페이지(주인2.html)로 이동
+    if (orderManageBtn) {
+        orderManageBtn.addEventListener('click', () => {
+            location.href = '주인2.html';
+        });
+    }
 
     // 처음으로 버튼
     backBtn.addEventListener('click', () => {
