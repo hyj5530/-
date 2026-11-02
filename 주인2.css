@@ -220,19 +220,9 @@ body {
     color: #555;
 }
 
-.order-status-tag.cooking {
-    background: #fff3e0;
-    color: #e65100;
-}
-
 .order-status-tag.done {
     background: #e8f5e9;
     color: #2e7d32;
-}
-
-.order-status-tag.delivery {
-    background: #f3e5f5;
-    color: #7b1fa2;
 }
 
 .order-items-detail {
@@ -267,7 +257,7 @@ body {
     transition: all 0.25s ease-in-out;
 }
 
-/* 1. [조리시작] 기본 상태 (주황/워밍 계열) */
+/* 1. [조리시작] 버튼 (주황색) */
 .cook-btn {
     background-color: #ff9800;
     color: white;
@@ -278,7 +268,7 @@ body {
     background-color: #f57c00;
 }
 
-/* 2. [조리 완료] 동적 상태 (메인 민트/에메랄드 계열 통일) */
+/* 2. [조리 완료] 동적 상태 (민트색) */
 .cook-btn.completed {
     background-color: #26a69a;
     color: white;
@@ -289,21 +279,26 @@ body {
     background-color: #00897b;
 }
 
-/* 3. [배달기사 요청] 버튼 (포인트 보라색 계열 통일) */
+/* 3. [배달기사 요청] 버튼 - 활성화 상태 (보라색) */
 .delivery-btn {
     background-color: #845ec2;
     color: white;
     box-shadow: 0 4px 10px rgba(132, 94, 194, 0.25);
 }
 
-.delivery-btn:hover {
+.delivery-btn:hover:not(:disabled) {
     background-color: #6b4c9a;
+    transform: translateY(-1px);
 }
 
+/* 🌟 비활성화 상태 (조리완료 클릭 전) */
 .delivery-btn:disabled {
-    background-color: #ccc;
+    background-color: #e0e0e0;
+    color: #a0a0a0;
     cursor: not-allowed;
     box-shadow: none;
+    border: 1px solid #d6d6d6;
+    opacity: 0.7;
 }
 
 /* 팝업 모달 스타일 */
