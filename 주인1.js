@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuList = document.getElementById('menuList');
     const menuCount = document.getElementById('menuCount');
     const backBtn = document.getElementById('backBtn');
-    const orderManageBtn = document.getElementById('orderManageBtn'); // 🌟 주문접수 관리 버튼 추가
+    const orderManageBtn = document.getElementById('orderManageBtn');
 
     let myMenuKeys = JSON.parse(localStorage.getItem('myWawaMenuKeys')) || [];
     let allMenusData = {};
@@ -41,9 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
             renderMyMenus(allMenusData);
         }, (error) => {
             console.error("데이터 읽기 실패:", error);
+            menuList.innerHTML = '<li class="empty-item" style="color: #ff6b6b;">메뉴를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</li>';
+            menuCount.textContent = '0개';
         });
     } else {
-        menuList.innerHTML = '<li class="empty-item" style="color:red;">Firebase 연동 오류 발생</li>';
+        menuList.innerHTML = '<li class="empty-item" style="color: #ff6b6b;">메뉴를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</li>';
     }
 
     // 메뉴 등록 버튼 클릭 이벤트
@@ -93,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const validKeys = myMenuKeys.filter(key => data && data[key]);
 
         if (validKeys.length === 0) {
-            menuList.innerHTML = '<li class="empty-item">아직 등록한 메뉴가 없습니다.</li>';
+            menuList.innerHTML = '<li class="empty-item">등록된 메뉴가 없습니다</li>';
             menuCount.textContent = '0개';
             return;
         }
@@ -130,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 🌟 주문접수 관리 페이지(주인2.html)로 이동
+    // 주문접수 관리 페이지(주인2.html)로 이동
     if (orderManageBtn) {
         orderManageBtn.addEventListener('click', () => {
             location.href = '주인2.html';
