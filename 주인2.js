@@ -35,36 +35,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 내 컴퓨터에서 등록한 메뉴 Key 목록 로드
     let myMenuKeys = JSON.parse(localStorage.getItem('myWawaMenuKeys')) || [];
-    let pendingRemoveOrderId = null; // 팝업 확인 후 삭제할 주문 ID
+    let allMenusData = {};
+    let allOrdersData = null;
+    let pendingRemoveOrderId = null;
 
     // 1. 등록된 메뉴 목록 실시간 로드
     if (menuRef) {
         onValue(menuRef, (snapshot) => {
-            const data = snapshot.val();
-            renderMyRegisteredMenus(data);
+            allMenusData = snapshot.val() || {};
+            renderMyRegisteredMenus(allMenusData);
+            if (allOrdersData !== null) {
+                renderOrders(allOrdersData);
+            }
         });
     }
 
     // 2. 주문 내역 실시간 로드
     if (ordersRef) {
         onValue(ordersRef, (snapshot) => {
-            const data = snapshot.val();
-            renderOrders(data);
+            allOrdersData = snapshot.val() || {};
+            renderOrders(allOrdersData);
         });
     }
 
-    // 🐾 내 컴퓨터에서 등록한 메뉴만 필터링해서 렌더링
+    // 내 컴퓨터에서 등록한 메뉴만 필터링해서 렌더링
     function renderMyRegisteredMenus(data) {
         registeredMenuList.innerHTML = '';
         if (!data) {
-            registeredMenuList.innerHTML = '<li class="empty-item">아직 등록한 메뉴가 없습니다.</li>';
+            registeredMenuList.innerHTML = '<li class="empty-item">등록된 메뉴가 없습니다</li>';
             return;
         }
 
         const validKeys = myMenuKeys.filter(key => data && data[key]);
 
         if (validKeys.length === 0) {
-            registeredMenuList.innerHTML = '<li class="empty-item">아직 등록한 메뉴가 없습니다.</li>';
+            registeredMenuList.innerHTML = '<li class="empty-item">등록된 메뉴가 없습니다</li>';
             return;
         }
 
@@ -80,46 +85,77 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🛵 3단계 (접수대기 -> 조리중 -> 조리완료) 주문 내역 렌더링
+    // 본인 가게에서 등록한 메뉴만 포함된 주문 내역 렌더링
     function renderOrders(data) {
         orderList.innerHTML = '';
 
-        if (!data) {
+        if (!data || Object.keys(data).length === 0) {
             orderList.innerHTML = '<div class="empty-order">현재 들어온 주문이 없습니다. 🐾</div>';
             orderCountBadge.textContent = '신규 0건';
             return;
         }
 
-        const orderKeys = Object.keys(data).reverse();
-        orderCountBadge.textContent = `신규 ${orderKeys.length}건`;
+        // 각 주문에서 '내 가게가 등록한 메뉴'만 추출
+        const myFilteredOrders = Object.keys(data)
+            .reverse()
+            .map((orderId) => {
+                const order = data[orderId];
+                const myItems = (order.items || []).filter((item) => {
+                    if (item.id) {
+                        return myMenuKeys.includes(item.id);
+                    }
+                    return myMenuKeys.some(
+                        (key) => allMenusData[key] && allMenusData[key].name === item.name
+                    );
+                });
 
-        orderKeys.forEach((orderId) => {
-            const order = data[orderId];
+                return {
+                    orderId,
+                    order,
+                    myItems
+                };
+            })
+            .filter((entry) => entry.myItems.length > 0);
+
+        if (myFilteredOrders.length === 0) {
+            orderList.innerHTML = '<div class="empty-order">현재 들어온 주문이 없습니다. 🐾</div>';
+            orderCountBadge.textContent = '신규 0건';
+            return;
+        }
+
+        orderCountBadge.textContent = `신규 ${myFilteredOrders.length}건`;
+
+        myFilteredOrders.forEach(({ orderId, order, myItems }) => {
             const status = order.status || '접수대기';
 
             const card = document.createElement('div');
             card.className = 'order-item-card';
 
-            const itemsHtml = order.items.map(item => 
+            const itemsHtml = myItems.map(item => 
                 `<li>- ${item.name} x ${item.quantity}개 (${(item.price * item.quantity).toLocaleString()}원)</li>`
             ).join('');
 
-            // 🌟 3단계 상태별 태그, 버튼 문구, 배달버튼 활성화 여부 설정
+            const myTotalPrice = myItems.reduce(
+                (sum, item) => sum + (item.price * item.quantity),
+                0
+            );
+
+            // 3단계 상태별 태그, 버튼 문구, 배달버튼 활성화 여부 설정
             let statusTagHtml = `<span class="order-status-tag">접수대기</span>`;
             let cookBtnText = '조리 시작';
             let cookBtnClass = 'action-btn cook-btn';
-            let isDeliveryDisabled = true; // 조리완료 전까지는 기본 비활성화
+            let isDeliveryDisabled = true;
 
             if (status === '조리중') {
                 statusTagHtml = `<span class="order-status-tag cooking">조리중</span>`;
                 cookBtnText = '조리 완료';
                 cookBtnClass = 'action-btn cook-btn in-progress';
-                isDeliveryDisabled = true; // 조리중일 때도 여전히 비활성화!
-            } else if (status === '조리완료') {
+                isDeliveryDisabled = true;
+            } else if (status === '조리완료' || status === '배달중') {
                 statusTagHtml = `<span class="order-status-tag done">조리완료</span>`;
                 cookBtnText = '✓ 조리 완료';
                 cookBtnClass = 'action-btn cook-btn completed';
-                isDeliveryDisabled = false; // 🌟 조리완료 시에만 배달기사 요청 버튼 활성화!
+                isDeliveryDisabled = false;
             }
 
             card.innerHTML = `
@@ -131,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${itemsHtml}
                 </ul>
                 <div class="order-total-price">
-                    총 결제금액: ${order.totalPrice ? order.totalPrice.toLocaleString() : 0}원
+                    총 결제금액: ${myTotalPrice.toLocaleString()}원
                 </div>
                 <div class="order-action-btns">
                     <button class="${cookBtnClass}" data-id="${orderId}" data-status="${status}">
@@ -153,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const orderId = target.dataset.id;
         if (!orderId) return;
 
-        // 🌟 [접수대기 ➔ 조리중 ➔ 조리완료] 순서 제어
+        // [접수대기 ➔ 조리중 ➔ 조리완료] 순서 제어
         if (target.classList.contains('cook-btn')) {
             const currentStatus = target.dataset.status || '접수대기';
             let nextStatus = '접수대기';
@@ -163,20 +199,21 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (currentStatus === '조리중') {
                 nextStatus = '조리완료';
             } else if (currentStatus === '조리완료') {
-                nextStatus = '조리완료'; // 이미 완료된 상태 유지
+                nextStatus = '조리완료';
             }
 
             update(ref(db, `orders/${orderId}`), { status: nextStatus });
         }
 
-        // [배달기사 요청] 클릭 시 (활성화된 상태일 때만)
+        // [배달기사 요청] 클릭 시 손님2 화면에 '배달중' 즉시 반영 및 팝업 오픈
         if (target.classList.contains('delivery-btn') && !target.disabled) {
             pendingRemoveOrderId = orderId;
-            modalOverlay.classList.add('active'); // 팝업 모달 표시
+            update(ref(db, `orders/${orderId}`), { status: '배달중' });
+            modalOverlay.classList.add('active');
         }
     });
 
-    // 팝업 모달 [확인] 클릭 시 해당 주문 삭제
+    // 팝업 모달 [확인] 클릭 시 주인 화면 목록에서 해당 주문 삭제
     modalCloseBtn.addEventListener('click', () => {
         modalOverlay.classList.remove('active');
         if (pendingRemoveOrderId && db) {
