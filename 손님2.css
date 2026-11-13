@@ -1,0 +1,256 @@
+/* 기본 초기화 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    color: #333;
+    padding: 20px;
+}
+
+/* 메인 컨테이너 */
+.customer-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+}
+
+/* 헤더 영역 */
+.customer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: #845ec2;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.header-title-box h1 {
+    font-size: 26px;
+    color: #00c9a7;
+    margin-bottom: 5px;
+}
+
+.header-title-box p {
+    font-size: 14px;
+    color: #666;
+}
+
+.header-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.back-btn {
+    background: #00c9a7;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    background: #00b393;
+}
+
+.menu-back-btn {
+    background: #845ec2;
+}
+
+.menu-back-btn:hover {
+    background: #734dbf;
+}
+
+/* 상단 치와와 안내 배너 */
+.status-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #e0f8f2 0%, #f3eef9 100%);
+    border: 2px dashed #845ec2;
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 25px;
+}
+
+.status-puppy-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #00c9a7;
+    flex-shrink: 0;
+}
+
+.status-banner-text h2 {
+    font-size: 16px;
+    color: #845ec2;
+    margin-bottom: 4px;
+}
+
+.status-banner-text p {
+    font-size: 13px;
+    color: #555;
+}
+
+/* 주문 현황 카드 목록 */
+.status-list-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.empty-status {
+    text-align: center;
+    color: #888;
+    padding: 50px 20px;
+    background: #f9f9fb;
+    border-radius: 15px;
+    font-size: 15px;
+}
+
+.status-card {
+    background: #ffffff;
+    border: 2px solid #e1f0eb;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.status-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #e1f0eb;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+}
+
+.order-time-text {
+    font-size: 13px;
+    color: #777;
+    font-weight: bold;
+}
+
+.current-state-pill {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #f0f7f4;
+    color: #00897b;
+}
+
+.current-state-pill.cooking {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.current-state-pill.done {
+    background: #e0f8f2;
+    color: #00897b;
+}
+
+.current-state-pill.delivery {
+    background: #f3eef9;
+    color: #845ec2;
+}
+
+/* 4단계 진행 트래커 */
+.progress-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .progress-steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.step-box {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    color: #adb5bd;
+    transition: all 0.25s ease;
+}
+
+.step-box .step-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.step-box .step-label {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* 지나간 단계 */
+.step-box.passed {
+    background: #f0f7f4;
+    border-color: #b2dfdb;
+    color: #00897b;
+}
+
+/* 현재 활성화된 단계 */
+.step-box.active {
+    background: linear-gradient(135deg, #e0f8f2 0%, #f3eef9 100%);
+    border-color: #845ec2;
+    color: #845ec2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(132, 94, 194, 0.15);
+}
+
+/* 주문 메뉴 내역 요약 */
+.ordered-items-box {
+    background: #faf8ff;
+    border: 1px solid #845ec233;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.ordered-items-list {
+    list-style: none;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 8px;
+}
+
+.ordered-total-row {
+    border-top: 1px solid #eee;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 15px;
+    color: #845ec2;
+}
