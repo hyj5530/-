@@ -29,14 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPriceEl = document.getElementById('totalPrice');
     const cartBadge = document.getElementById('cartBadge');
     const orderBtn = document.getElementById('orderBtn');
+    const orderStatusBtn = document.getElementById('orderStatusBtn');
     const backBtn = document.getElementById('backBtn');
 
     let menus = [];
     let cart = []; 
     let selectedCategory = null; 
+    let isMenuLoadError = false;
 
     if (menuRef) {
         onValue(menuRef, (snapshot) => {
+            isMenuLoadError = false;
             const data = snapshot.val();
             if (data) {
                 menus = Object.keys(data).map(key => ({
@@ -50,7 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedCategory) {
                 renderMenus();
             }
+        }, (error) => {
+            console.error("메뉴 조회 실패:", error);
+            isMenuLoadError = true;
+            menuGrid.innerHTML = `<div class="no-menu" style="color: #ff6b6b;">메뉴를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>`;
         });
+    } else {
+        isMenuLoadError = true;
+        menuGrid.innerHTML = `<div class="no-menu" style="color: #ff6b6b;">메뉴를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>`;
     }
 
     categoryBtnGrid.addEventListener('click', (e) => {
@@ -68,6 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMenus() {
         menuGrid.innerHTML = '';
 
+        if (isMenuLoadError) {
+            menuGrid.innerHTML = `<div class="no-menu" style="color: #ff6b6b;">메뉴를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>`;
+            return;
+        }
+
         if (!selectedCategory) {
             menuGrid.innerHTML = `<div class="no-menu">위에서 카테고리를 선택해 주세요! 🐾</div>`;
             return;
@@ -76,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filteredMenus = menus.filter(menu => menu.category === selectedCategory);
 
         if (filteredMenus.length === 0) {
-            menuGrid.innerHTML = `<div class="no-menu">등록된 '${selectedCategory}' 메뉴가 없습니다. 🐾</div>`;
+            menuGrid.innerHTML = `<div class="no-menu">등록된 메뉴가 없습니다</div>`;
             return;
         }
 
@@ -86,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="card-name">${menu.name}</div>
                 <div class="card-price">${menu.price}원</div>
-                <button class="add-cart-btn" data-name="${menu.name}" data-price="${menu.price}">담기</button>
+                <button class="add-cart-btn" data-id="${menu.id}" data-name="${menu.name}" data-price="${menu.price}">담기</button>
             `;
             menuGrid.appendChild(card);
         });
@@ -94,18 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     menuGrid.addEventListener('click', (e) => {
         if (!e.target.classList.contains('add-cart-btn')) return;
+        const id = e.target.dataset.id;
         const name = e.target.dataset.name;
         const priceStr = e.target.dataset.price;
-        addToCart(name, priceStr);
+        addToCart(id, name, priceStr);
     });
 
-    function addToCart(name, priceStr) {
+    function addToCart(id, name, priceStr) {
         const price = Number(String(priceStr).replace(/,/g, ''));
-        const existingItem = cart.find(item => item.name === name);
+        const existingItem = cart.find(item => item.id === id && item.name === name);
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
-            cart.push({ name, price, quantity: 1 });
+            cart.push({ id, name, price, quantity: 1 });
         }
         renderCart();
     }
@@ -165,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cartBadge.textContent = totalCount;
     }
 
-    // 🌟 주문하기 클릭 시 Firebase 'orders' 노드로 전송
+    // 주문하기 클릭 -> 팝업 확인 후 손님2.html로 이동
     orderBtn.addEventListener('click', () => {
         if (cart.length === 0) {
             alert('장바구니에 담긴 메뉴가 없습니다!');
@@ -174,29 +190,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (db) {
             const ordersRef = ref(db, 'orders');
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const createdAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
             const orderData = {
                 items: cart,
-                totalPrice: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                totalPrice,
                 status: '접수대기',
-                createdAt: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+                createdAt
             };
 
-            push(ordersRef, orderData)
+            const newOrderRef = push(ordersRef, orderData);
+            newOrderRef
                 .then(() => {
+                    // 손님2 화면에서 내 주문 내역과 실시간 상태를 추적하기 위해 로컬에 저장
+                    const myOrders = JSON.parse(localStorage.getItem('myWawaOrders')) || [];
+                    myOrders.push({
+                        id: newOrderRef.key,
+                        ...orderData
+                    });
+                    localStorage.setItem('myWawaOrders', JSON.stringify(myOrders));
+
                     alert('성공적으로 주문이 완료되었습니다! 🐾 맛있게 준비해 드릴게요.');
                     cart = [];
                     renderCart();
+                    location.href = '손님2.html';
                 })
                 .catch((error) => {
                     console.error("주문 실패:", error);
                     alert("주문 전송 중 오류가 발생했습니다.");
                 });
         } else {
-            alert('성공적으로 주문이 완료되었습니다! 🐾 맛있게 준비해 드릴게요.');
-            cart = [];
-            renderCart();
+            alert("데이터베이스 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
         }
     });
+
+    // 주문현황확인 버튼 클릭 -> 손님2.html로 이동
+    if (orderStatusBtn) {
+        orderStatusBtn.addEventListener('click', () => {
+            location.href = '손님2.html';
+        });
+    }
 
     backBtn.addEventListener('click', () => {
         location.href = 'index.html';
